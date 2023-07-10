@@ -35,11 +35,13 @@ const AudioVisualizer = () => {
           />
         </div>
 
-        <ProgressBar
-          duration={duration}
-          currentTime={currentTime}
-          handleSeek={handleSeek}
-        />
+        {fileName && (
+          <ProgressBar
+            duration={duration}
+            currentTime={currentTime}
+            handleSeek={handleSeek}
+          />
+        )}
       </div>
     </div>
   );

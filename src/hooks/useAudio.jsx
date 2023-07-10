@@ -17,13 +17,13 @@ export const AudioProvider = ({ children }) => {
   const audioContextRef = useRef(null);
   const sourceNodeRef = useRef(null);
   const analyserRef = useRef(null);
-  let animationFrameId = useRef(null);
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
 
   const [fileName, setFileName] = useState("");
   const [colorSet, setColorSet] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [visualizerType, setVisualizerType] = useState("bars");
 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -76,54 +76,92 @@ export const AudioProvider = ({ children }) => {
     }
     setIsPlaying(!isPlaying);
   };
+  const animationFrameId = useRef(null);
+
+  useEffect(() => {
+    animateVisualizer();
+  }, [visualizerType]);
 
   const animateVisualizer = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    if (canvasRef && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
 
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      sourceNodeRef.current = audioContextRef.current.createMediaElementSource(
-        audioRef.current
-      );
-      sourceNodeRef.current.connect(analyserRef.current);
-      analyserRef.current.connect(audioContextRef.current.destination);
-    }
-
-    const bufferLength = analyserRef.current.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const drawVisualizer = () => {
-      animationFrameId.current = requestAnimationFrame(drawVisualizer);
-      analyserRef.current.getByteFrequencyData(dataArray);
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const barWidth = (canvas.width / bufferLength) * 2.5;
-      let barHeight;
-      let x = 0;
-      const bar_width = 3;
-      let start = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        start = i * 4;
-        //create a gradient for the  whole canvas
-        let gradient = ctx.createLinearGradient(
-          0,
-          0,
-          canvasRef.current.width,
-          canvasRef.current.height
-        );
-        gradient.addColorStop(0.2, "#2392f5");
-        gradient.addColorStop(0.5, "#fe0095");
-        gradient.addColorStop(1.0, "purple");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(start, canvasRef.current.height, bar_width, -dataArray[i]);
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext ||
+          window.webkitAudioContext)();
+        analyserRef.current = audioContextRef.current.createAnalyser();
+        sourceNodeRef.current =
+          audioContextRef.current.createMediaElementSource(audioRef.current);
+        sourceNodeRef.current.connect(analyserRef.current);
+        analyserRef.current.connect(audioContextRef.current.destination);
       }
-    };
 
-    drawVisualizer();
+      const bufferLength = analyserRef.current.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const animateBars = () => {
+        animationFrameId.current = requestAnimationFrame(animateBars);
+        analyserRef.current.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i];
+
+          ctx.fillStyle = `rgb(${barHeight + 100},50,50)`;
+          ctx.fillRect(
+            x,
+            canvas.height - barHeight / 2,
+            barWidth,
+            barHeight / 2
+          );
+
+          x += barWidth + 1;
+        }
+      };
+
+      const animateWaveform = () => {
+        animationFrameId.current = requestAnimationFrame(animateWaveform);
+        analyserRef.current.getByteTimeDomainData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgb(100, 100, 100)";
+        ctx.beginPath();
+        const sliceWidth = (canvas.width * 1.0) / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+
+          x += sliceWidth;
+        }
+
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
+      };
+
+      if (visualizerType === "bars") {
+        animateBars();
+      } else {
+        animateWaveform();
+      }
+    }
+  };
+  const handleChangeVisualizer = () => {
+    const newVisualizerType = visualizerType === "bars" ? "waveform" : "bars";
+    setVisualizerType(newVisualizerType);
   };
 
   return (
@@ -146,6 +184,8 @@ export const AudioProvider = ({ children }) => {
         handleTimeUpdate,
         handleLoadedMetadata,
         handleSeek,
+        setVisualizerType,
+        handleChangeVisualizer,
       }}
     >
       {children}

@@ -1,3 +1,5 @@
+import { useAudio } from "../../hooks/useAudio";
+
 const DisplayTrack = ({
   audioRef,
   handleTimeUpdate,
@@ -7,6 +9,8 @@ const DisplayTrack = ({
   handlePlayPause,
   isPlaying,
 }) => {
+  const { handleChangeVisualizer } = useAudio();
+
   return (
     <div>
       <audio
@@ -16,16 +20,25 @@ const DisplayTrack = ({
       />
       {audioRef && audioRef.current && (
         <div className="audio-info">
-          <div className="audio-image">
-            <canvas ref={canvasRef} />
-          </div>
+          {name && (
+            <div className="audio-image">
+              <canvas ref={canvasRef} />
+            </div>
+          )}
           <div className="text">
             <p className="title">{name}</p>
             {/* <p className="time">Duration: {formatTime(duration)}</p> */}
           </div>
-          <button onClick={handlePlayPause} className="button-submit">
-            {isPlaying ? "Pause" : "Play"}
-          </button>
+          {name && (
+            <button onClick={handlePlayPause} className="button-submit">
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+          )}
+          {name && (
+            <button onClick={handleChangeVisualizer} className="button-submit">
+              Switch Visualizer
+            </button>
+          )}
         </div>
       )}
     </div>
