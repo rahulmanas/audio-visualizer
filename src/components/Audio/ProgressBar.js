@@ -1,31 +1,21 @@
-const ProgressBar = ({ progressBarRef, audioRef, timeProgress, duration }) => {
-  const handleProgressChange = () => {
-    audioRef.current.currentTime = progressBarRef.current.value;
-  };
+import React from "react";
+import { formatTime } from "../../utils/util";
 
-  const formatTime = (time) => {
-    if (time && !isNaN(time)) {
-      const minutes = Math.floor(time / 60);
-      const formatMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-      const seconds = Math.floor(time % 60);
-      const formatSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-      return `${formatMinutes}:${formatSeconds}`;
-    }
-    return "00:00";
-  };
-
+export default function ProgressBar({ duration, currentTime, handleSeek }) {
   return (
-    <div className="progress">
-      <span className="time current">{formatTime(timeProgress)}</span>
-      <input
-        type="range"
-        ref={progressBarRef}
-        defaultValue="0"
-        onChange={handleProgressChange}
-      />
-      <span className="time">{formatTime(duration)}</span>
+    <div className="" style={{ marginTop: "40px" }}>
+      <div className="progress">
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={currentTime}
+          onChange={handleSeek}
+        />
+      </div>
+      <p className="time" style={{ marginTop: "20px", textAlign: "center" }}>
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </p>
     </div>
   );
-};
-
-export default ProgressBar;
+}

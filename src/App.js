@@ -1,4 +1,5 @@
 import "./App.css";
+import "./styles/customize-progress-bar.css";
 
 import AudioVisualizer from "./components/Audio/AudioVisualizer";
 

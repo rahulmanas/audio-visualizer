@@ -1,75 +1,48 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DisplayTrack from "./DisplayTrack";
-import Controls from "./Controls";
 import ProgressBar from "./ProgressBar";
 import { useAudio } from "../../hooks/useAudio";
+import FileInput from "./FileInput";
 
-export default function AudioVisualizer() {
-  const [file, setFile] = useState(null);
+const AudioVisualizer = () => {
   const {
-    canvasRef,
+    isPlaying,
     audioRef,
-    source,
-    analyzer,
-    handleAudioPlay,
-    timeProgress,
-    setTimeProgress,
+    canvasRef,
+    fileName,
+    handlePlayPause,
+    currentTime,
+    duration,
+    handleTimeUpdate,
+    handleLoadedMetadata,
+    handleSeek,
   } = useAudio();
-  const [duration, setDuration] = useState(0);
-
-  useEffect(() => {
-    if (file) {
-      handleAudioPlay();
-    }
-  }, [file]);
 
   return (
-    <div className="App">
+    <div style={{ margin: "auto", padding: "20px" }}>
       <div>
-        <input
-          type="file"
-          onChange={({ target: { files } }) => {
-            files[0] && setFile(files[0]);
-          }}
+        <FileInput />
+
+        <div style={{ marginTop: "40px" }}>
+          <DisplayTrack
+            audioRef={audioRef}
+            handleTimeUpdate={handleTimeUpdate}
+            handleLoadedMetadata={handleLoadedMetadata}
+            canvasRef={canvasRef}
+            name={fileName}
+            handlePlayPause={handlePlayPause}
+            isPlaying={isPlaying}
+          />
+        </div>
+
+        <ProgressBar
+          duration={duration}
+          currentTime={currentTime}
+          handleSeek={handleSeek}
         />
       </div>
-      {file && (
-        <>
-          <DisplayTrack
-            {...{
-              currentTrack: window.URL.createObjectURL(file),
-              audioRef,
-              duration,
-              setDuration,
-              canvasRef,
-              file,
-            }}
-          />
-
-          <Controls
-            {...{
-              audioRef,
-              duration,
-              setTimeProgress,
-              timeProgress,
-              source,
-              analyzer,
-            }}
-          />
-
-          {/* <ProgressBar
-            {...{ progressBarRef, audioRef, timeProgress, duration }}
-          /> */}
-
-          {/* <audio
-            ref={audioRef}
-            onPlay={handleAudioPlay}
-            src={window.URL.createObjectURL(file)}
-            controls
-          /> */}
-        </>
-      )}
-      {/* <canvas ref={canvasRef} width={500} height={200} /> */}
     </div>
   );
-}
+};
+
+export default AudioVisualizer;

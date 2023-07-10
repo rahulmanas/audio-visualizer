@@ -22,6 +22,7 @@ body {
 .audio-info {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .text {
@@ -29,13 +30,10 @@ body {
 }
 
 .title {
-  color: #fff;
+  color: black;
   font-weight: 100;
   font-size: 32px;
-  margin-bottom: 0;
   padding: 2px;
-  line-height: 37px;
-  background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* audio image */
@@ -92,6 +90,12 @@ body {
 
 button svg {
   font-size: 20px;
+}
+
+.button-submit {
+  padding: 8px 16px;
+  border-radius: 16px;
+  height: max-content;
 }
 
 .volume {
