@@ -24,6 +24,7 @@ export const AudioProvider = ({ children }) => {
   const [colorSet, setColorSet] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [visualizerType, setVisualizerType] = useState("bars");
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -159,6 +160,13 @@ export const AudioProvider = ({ children }) => {
       }
     }
   };
+
+  const handlePlaybackSpeedChange = (event) => {
+    const newSpeed = parseFloat(event.target.value);
+    setPlaybackSpeed(newSpeed);
+    audioRef.current.playbackRate = newSpeed;
+  };
+
   const handleChangeVisualizer = () => {
     const newVisualizerType = visualizerType === "bars" ? "waveform" : "bars";
     setVisualizerType(newVisualizerType);
@@ -186,6 +194,9 @@ export const AudioProvider = ({ children }) => {
         handleSeek,
         setVisualizerType,
         handleChangeVisualizer,
+        handlePlaybackSpeedChange,
+        playbackSpeed,
+        setPlaybackSpeed,
       }}
     >
       {children}
