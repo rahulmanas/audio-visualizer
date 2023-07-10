@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useAudio } from "../../hooks/useAudio";
 
 const DisplayTrack = ({
