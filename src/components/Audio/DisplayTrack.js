@@ -50,18 +50,20 @@ const DisplayTrack = ({
                 </div>
               )}
             </div>
-            <div style={{ marginTop: "20px" }}>
-              <label htmlFor="speed">Playback Speed: </label>
-              <input
-                type="range"
-                id="speed"
-                min="0.5"
-                max="2"
-                step="0.1"
-                value={playbackSpeed}
-                onChange={handlePlaybackSpeedChange}
-              />
-            </div>
+            {name && (
+              <div style={{ marginTop: "20px" }}>
+                <label htmlFor="speed">Playback Speed: </label>
+                <input
+                  type="range"
+                  id="speed"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={playbackSpeed}
+                  onChange={handlePlaybackSpeedChange}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

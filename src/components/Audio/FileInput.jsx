@@ -20,28 +20,6 @@ export default function FileInput() {
     }
   };
 
-  function handleFile(files) {
-    alert("Number of files: " + files.length);
-  }
-
-  // triggers when file is dropped
-  const handleDrop = function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files);
-    }
-  };
-
-  // triggers when file is selected with click
-  const handleChange = function (e) {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files);
-    }
-  };
-
   // triggers the input when the button is clicked
   const onButtonClick = () => {
     inputRef.current.click();
@@ -51,6 +29,7 @@ export default function FileInput() {
     <div style={{ marginTop: "40px" }}>
       <form
         id="form-file-upload"
+        style={{ margin: "auto" }}
         onDragEnter={handleDrag}
         onSubmit={(e) => e.preventDefault()}
       >
